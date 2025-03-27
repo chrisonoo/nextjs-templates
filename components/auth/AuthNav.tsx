@@ -9,11 +9,12 @@ interface AuthNavProps {
 }
 
 export function AuthNav({ isMobile = false, onMobileNavClose }: AuthNavProps) {
-    const handleSignOut = async () => {
-        if (isMobile && onMobileNavClose) {
-            onMobileNavClose();
-        }
-    };
+    // TODO: Uncomment this when the admin panel is ready and session is implemented
+    // const handleSignOut = async () => {
+    //     if (isMobile && onMobileNavClose) {
+    //         onMobileNavClose();
+    //     }
+    // };
 
     // TODO: Uncomment this when the admin panel is ready and session is implemented
     // if (session) {
