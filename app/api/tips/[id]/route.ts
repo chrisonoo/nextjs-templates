@@ -1,19 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { tipsService } from "@/services";
 
-interface RouteParams {
-    params: {
-        id: string;
-    };
-}
-
 /**
  * GET handler for /api/tips/:id
  * Retrieves a specific tip by ID
  */
-export async function GET(request: NextRequest, context: RouteParams) {
-    const params = await context.params;
-    const parsedId = parseInt(params.id);
+export async function GET(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    const { id } = await params;
+    const parsedId = parseInt(id);
 
     try {
         if (isNaN(parsedId)) {
@@ -59,9 +56,12 @@ export async function GET(request: NextRequest, context: RouteParams) {
  * PUT handler for /api/tips/:id
  * Updates a specific tip
  */
-export async function PUT(request: NextRequest, context: RouteParams) {
-    const params = await context.params;
-    const parsedId = parseInt(params.id);
+export async function PUT(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    const { id } = await params;
+    const parsedId = parseInt(id);
 
     try {
         if (isNaN(parsedId)) {
@@ -112,9 +112,12 @@ export async function PUT(request: NextRequest, context: RouteParams) {
  * DELETE handler for /api/tips/:id
  * Deletes a specific tip
  */
-export async function DELETE(request: NextRequest, context: RouteParams) {
-    const params = await context.params;
-    const parsedId = parseInt(params.id);
+export async function DELETE(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    const { id } = await params;
+    const parsedId = parseInt(id);
 
     try {
         if (isNaN(parsedId)) {
