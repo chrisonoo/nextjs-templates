@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { cookies } from "next/headers";
-import "./globals.css";
+import { Header } from "@/components/web/Header";
+import "../globals.css";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -40,7 +40,7 @@ export default async function RootLayout({
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-black dark:bg-gray-900 dark:text-white`}
             >
-                <ThemeToggle />
+                <Header />
                 {children}
             </body>
         </html>
