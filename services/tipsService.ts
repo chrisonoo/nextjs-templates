@@ -20,7 +20,7 @@ export class TipsService
      * Could apply business rules like filtering, sorting, etc.
      */
     async getAll(): Promise<Tip[]> {
-        logger.debug("Getting all tips");
+        logger.debug("Fetching all tips from repository");
         return tipsRepository.findAll();
     }
 
@@ -33,7 +33,7 @@ export class TipsService
         // Validate and parse ID
         const parsedId = this.validateAndParseId(id);
 
-        logger.debug(`Getting tip by ID: ${parsedId}`);
+        logger.debug(`Fetching tip with ID: ${parsedId}`);
 
         // Get the tip
         const tip = await tipsRepository.findById(parsedId);
@@ -52,13 +52,15 @@ export class TipsService
      * @throws ValidationError if validation fails
      */
     async create(data: TipCreateInput): Promise<Tip> {
+        logger.debug("Creating new tip", {
+            contentLength: data.content?.length,
+        });
+
         // Business validation
         this.validateTipContent(data.content);
 
         // Business transformation
         const sanitizedContent = data.content.trim();
-
-        logger.debug("Creating new tip", { content: sanitizedContent });
 
         // Delegate to repository for storage
         return tipsRepository.insert({ content: sanitizedContent });
@@ -73,7 +75,7 @@ export class TipsService
         // Validate and parse ID
         const parsedId = this.validateAndParseId(id);
 
-        logger.debug(`Updating tip with ID: ${parsedId}`, { data });
+        logger.debug(`Updating tip with ID: ${parsedId}`);
 
         // Business validation - check if tip exists
         const existingTip = await tipsRepository.findById(parsedId);

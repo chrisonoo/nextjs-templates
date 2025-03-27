@@ -15,7 +15,8 @@ export async function GET() {
         const allTips = await tipsService.getAll();
         return successResponse(allTips);
     } catch (error) {
-        logger.error("Error fetching tips:", error);
+        // Unexpected error - log it here
+        logger.error("Unexpected error fetching all tips", error);
         return errorResponse(
             error instanceof Error ? error.message : "Unknown error",
             "INTERNAL_ERROR",
@@ -33,7 +34,6 @@ export async function POST(request: NextRequest) {
 
     try {
         const body = await request.json();
-        logger.debug("Request body:", body);
 
         // Use the service to create a new tip
         const newTip = await tipsService.create({
@@ -47,12 +47,13 @@ export async function POST(request: NextRequest) {
             201
         );
     } catch (error) {
-        logger.error("Error creating tip:", error);
-
+        // Handle validation errors
         if (error instanceof ValidationError) {
             return errorResponse(error.message, "VALIDATION_ERROR", 400);
         }
 
+        // Unexpected error - log it here
+        logger.error("Unexpected error creating tip", error);
         return errorResponse(
             error instanceof Error ? error.message : "Unknown error",
             "INTERNAL_ERROR",

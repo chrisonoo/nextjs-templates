@@ -20,16 +20,16 @@ export async function GET(
         const tip = await tipsService.getById(id);
         return successResponse(tip);
     } catch (error) {
-        logger.error(`Error fetching tip with ID ${id}:`, error);
-
-        // Handle specific error types
+        // Handle specific error types without duplicating error logs
+        // (errors are already logged in the service layer)
         if (error instanceof NotFoundError) {
             return errorResponse(error.message, "NOT_FOUND", 404);
         } else if (error instanceof ValidationError) {
             return errorResponse(error.message, "VALIDATION_ERROR", 400);
         }
 
-        // Generic error handling
+        // Only log unexpected errors here
+        logger.error(`Unexpected error handling GET /api/tips/${id}`, error);
         return errorResponse(
             error instanceof Error ? error.message : "Unknown error",
             "INTERNAL_ERROR",
@@ -51,7 +51,6 @@ export async function PUT(
 
     try {
         const body = await request.json();
-        logger.debug("Request body:", body);
 
         // Use the service to update the tip - all validation happens in the service
         const updatedTip = await tipsService.update(id, {
@@ -60,16 +59,15 @@ export async function PUT(
 
         return successResponse(updatedTip, "Tip updated successfully");
     } catch (error) {
-        logger.error(`Error updating tip with ID ${id}:`, error);
-
-        // Handle specific error types
+        // Handle specific error types without duplicating error logs
         if (error instanceof NotFoundError) {
             return errorResponse(error.message, "NOT_FOUND", 404);
         } else if (error instanceof ValidationError) {
             return errorResponse(error.message, "VALIDATION_ERROR", 400);
         }
 
-        // Generic error handling
+        // Only log unexpected errors here
+        logger.error(`Unexpected error handling PUT /api/tips/${id}`, error);
         return errorResponse(
             error instanceof Error ? error.message : "Unknown error",
             "INTERNAL_ERROR",
@@ -95,16 +93,15 @@ export async function DELETE(
 
         return successResponse(null, "Tip deleted successfully");
     } catch (error) {
-        logger.error(`Error deleting tip with ID ${id}:`, error);
-
-        // Handle specific error types
+        // Handle specific error types without duplicating error logs
         if (error instanceof NotFoundError) {
             return errorResponse(error.message, "NOT_FOUND", 404);
         } else if (error instanceof ValidationError) {
             return errorResponse(error.message, "VALIDATION_ERROR", 400);
         }
 
-        // Generic error handling
+        // Only log unexpected errors here
+        logger.error(`Unexpected error handling DELETE /api/tips/${id}`, error);
         return errorResponse(
             error instanceof Error ? error.message : "Unknown error",
             "INTERNAL_ERROR",
