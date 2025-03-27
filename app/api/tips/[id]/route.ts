@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { tipsService } from "@/services";
 
 /**
@@ -10,37 +10,40 @@ export async function GET(
     { params }: { params: Promise<{ id: string }> }
 ) {
     const { id } = await params;
-    const parsedId = parseInt(id);
 
     try {
-        if (isNaN(parsedId)) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    message: "Invalid ID format",
-                },
-                { status: 400 }
-            );
-        }
-
-        const tip = await tipsService.getById(parsedId);
-
-        if (!tip) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    message: "Tip not found",
-                },
-                { status: 404 }
-            );
-        }
+        // Use the service to get the tip - all validation happens in the service
+        const tip = await tipsService.getById(id);
 
         return NextResponse.json({
             success: true,
             data: tip,
         });
     } catch (error) {
-        console.error(`Error fetching tip with ID ${parsedId}:`, error);
+        console.error(`Error fetching tip with ID ${id}:`, error);
+
+        // Handle specific error types
+        if (error instanceof Error) {
+            if (error.message.includes("Invalid ID format")) {
+                return NextResponse.json(
+                    {
+                        success: false,
+                        message: error.message,
+                    },
+                    { status: 400 }
+                );
+            } else if (error.message.includes("not found")) {
+                return NextResponse.json(
+                    {
+                        success: false,
+                        message: error.message,
+                    },
+                    { status: 404 }
+                );
+            }
+        }
+
+        // Generic error handling
         return NextResponse.json(
             {
                 success: false,
@@ -61,34 +64,14 @@ export async function PUT(
     { params }: { params: Promise<{ id: string }> }
 ) {
     const { id } = await params;
-    const parsedId = parseInt(id);
 
     try {
-        if (isNaN(parsedId)) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    message: "Invalid ID format",
-                },
-                { status: 400 }
-            );
-        }
-
         const body = await request.json();
 
-        const updatedTip = await tipsService.update(parsedId, {
+        // Use the service to update the tip - all validation happens in the service
+        const updatedTip = await tipsService.update(id, {
             content: body.content,
         });
-
-        if (!updatedTip) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    message: "Tip not found",
-                },
-                { status: 404 }
-            );
-        }
 
         return NextResponse.json({
             success: true,
@@ -96,7 +79,38 @@ export async function PUT(
             message: "Tip updated successfully",
         });
     } catch (error) {
-        console.error(`Error updating tip with ID ${parsedId}:`, error);
+        console.error(`Error updating tip with ID ${id}:`, error);
+
+        // Handle specific error types
+        if (error instanceof Error) {
+            if (error.message.includes("Invalid ID format")) {
+                return NextResponse.json(
+                    {
+                        success: false,
+                        message: error.message,
+                    },
+                    { status: 400 }
+                );
+            } else if (error.message.includes("not found")) {
+                return NextResponse.json(
+                    {
+                        success: false,
+                        message: error.message,
+                    },
+                    { status: 404 }
+                );
+            } else if (error.message.includes("cannot be empty")) {
+                return NextResponse.json(
+                    {
+                        success: false,
+                        message: error.message,
+                    },
+                    { status: 400 }
+                );
+            }
+        }
+
+        // Generic error handling
         return NextResponse.json(
             {
                 success: false,
@@ -117,37 +131,40 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     const { id } = await params;
-    const parsedId = parseInt(id);
 
     try {
-        if (isNaN(parsedId)) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    message: "Invalid ID format",
-                },
-                { status: 400 }
-            );
-        }
-
-        const success = await tipsService.delete(parsedId);
-
-        if (!success) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    message: `Tip with id ${parsedId} not found.`,
-                },
-                { status: 404 }
-            );
-        }
+        // Use the service to delete the tip - all validation happens in the service
+        await tipsService.delete(id);
 
         return NextResponse.json({
             success: true,
             message: "Tip deleted successfully",
         });
     } catch (error) {
-        console.error(`Error deleting tip with ID ${parsedId}:`, error);
+        console.error(`Error deleting tip with ID ${id}:`, error);
+
+        // Handle specific error types
+        if (error instanceof Error) {
+            if (error.message.includes("Invalid ID format")) {
+                return NextResponse.json(
+                    {
+                        success: false,
+                        message: error.message,
+                    },
+                    { status: 400 }
+                );
+            } else if (error.message.includes("not found")) {
+                return NextResponse.json(
+                    {
+                        success: false,
+                        message: error.message,
+                    },
+                    { status: 404 }
+                );
+            }
+        }
+
+        // Generic error handling
         return NextResponse.json(
             {
                 success: false,
