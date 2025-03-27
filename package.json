@@ -1,0 +1,58 @@
+{
+    "name": "api-base-v0",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint",
+        "db:test": "tsx db/utils/test-db.ts",
+        "db:clean": "tsx db/utils/clean.ts",
+        "db:reset": "tsx db/utils/reset.ts",
+        "db:generate": "drizzle-kit generate",
+        "db:migrate": "drizzle-kit migrate",
+        "db:push": "drizzle-kit push",
+        "db:seed": "tsx db/seeders/seed.ts",
+        "db:seed:drizzle": "tsx db/seeders/seed-drizzle.ts",
+        "db:update": "pnpm db:generate && pnpm db:migrate",
+        "db:fresh": "rimraf --glob \"./db/migrations/*\" && pnpm db:clean && pnpm db:generate && pnpm db:migrate && pnpm db:seed",
+        "db:fresh:migrate": "pnpm db:clean && pnpm db:migrate && pnpm db:seed",
+        "db:studio": "drizzle-kit studio"
+    },
+    "dependencies": {
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2.1.1",
+        "dotenv": "^16.4.7",
+        "drizzle-orm": "^0.41.0",
+        "drizzle-seed": "^0.3.1",
+        "lucide-react": "^0.484.0",
+        "mysql2": "^3.14.0",
+        "next": "15.2.4",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "tailwind-merge": "^3.0.2",
+        "tw-animate-css": "^1.2.4"
+    },
+    "devDependencies": {
+        "@eslint/eslintrc": "^3",
+        "@faker-js/faker": "^9.6.0",
+        "@tailwindcss/postcss": "^4",
+        "@types/node": "^20",
+        "@types/react": "^19",
+        "@types/react-dom": "^19",
+        "drizzle-kit": "^0.30.5",
+        "eslint": "^9",
+        "eslint-config-next": "15.2.4",
+        "rimraf": "^6.0.1",
+        "tailwindcss": "^4",
+        "tsx": "^4.19.3",
+        "typescript": "^5"
+    },
+    "pnpm": {
+        "onlyBuiltDependencies": [
+            "esbuild",
+            "sharp"
+        ]
+    }
+}
