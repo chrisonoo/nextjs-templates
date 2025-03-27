@@ -1,22 +1,13 @@
-import { ArrowRight } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
-
+import { ArrowLeft, ArrowRight } from "lucide-react";
 export default async function Home() {
     return (
         <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen font-[family-name:var(--font-geist-sans)]">
             <main className="flex flex-col gap-2 row-start-2 items-center">
-                <Image
-                    className="dark:invert mb-4"
-                    src="/next.svg"
-                    alt="Next.js logo"
-                    width={180}
-                    height={38}
-                    priority
-                />
-                <Link href="/admin" className="flex items-center gap-2">
-                    Admin Panel
-                    <ArrowRight className="w-4 h-4" />
+                <h2 className="text-4xl font-bold mb-4">Admin Panel</h2>
+                <Link href="/" className="flex items-center gap-2">
+                    <ArrowLeft className="w-4 h-4" />
+                    Back Home
                 </Link>
                 <Link
                     href="/api/tips"

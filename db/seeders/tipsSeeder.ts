@@ -19,8 +19,7 @@ export async function seedTips() {
     // Fixed tips defined directly in the seeder
     const fixedTips: TipData[] = [
         {
-            content:
-                'Get started by editing <code class="bg-black/[.10] dark:bg-white/[.10] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">app/page.tsx</code>.',
+            content: "Get started by editing 'app/page.tsx'.",
         },
         {
             content: "Save and see your changes instantly.",

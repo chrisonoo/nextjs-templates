@@ -11,11 +11,12 @@ interface RouteParams {
  * GET handler for /api/tips/:id
  * Retrieves a specific tip by ID
  */
-export async function GET(request: NextRequest, { params }: RouteParams) {
-    try {
-        const id = parseInt(params.id);
+export async function GET(request: NextRequest, context: RouteParams) {
+    const params = await context.params;
+    const parsedId = parseInt(params.id);
 
-        if (isNaN(id)) {
+    try {
+        if (isNaN(parsedId)) {
             return NextResponse.json(
                 {
                     success: false,
@@ -25,7 +26,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
             );
         }
 
-        const tip = await tipsService.getById(id);
+        const tip = await tipsService.getById(parsedId);
 
         if (!tip) {
             return NextResponse.json(
@@ -42,7 +43,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
             data: tip,
         });
     } catch (error) {
-        console.error(`Error fetching tip with ID ${params.id}:`, error);
+        console.error(`Error fetching tip with ID ${parsedId}:`, error);
         return NextResponse.json(
             {
                 success: false,
@@ -58,11 +59,12 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
  * PUT handler for /api/tips/:id
  * Updates a specific tip
  */
-export async function PUT(request: NextRequest, { params }: RouteParams) {
-    try {
-        const id = parseInt(params.id);
+export async function PUT(request: NextRequest, context: RouteParams) {
+    const params = await context.params;
+    const parsedId = parseInt(params.id);
 
-        if (isNaN(id)) {
+    try {
+        if (isNaN(parsedId)) {
             return NextResponse.json(
                 {
                     success: false,
@@ -74,7 +76,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
         const body = await request.json();
 
-        const updatedTip = await tipsService.update(id, {
+        const updatedTip = await tipsService.update(parsedId, {
             content: body.content,
         });
 
@@ -94,7 +96,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
             message: "Tip updated successfully",
         });
     } catch (error) {
-        console.error(`Error updating tip with ID ${params.id}:`, error);
+        console.error(`Error updating tip with ID ${parsedId}:`, error);
         return NextResponse.json(
             {
                 success: false,
@@ -110,11 +112,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
  * DELETE handler for /api/tips/:id
  * Deletes a specific tip
  */
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
-    try {
-        const id = parseInt(params.id);
+export async function DELETE(request: NextRequest, context: RouteParams) {
+    const params = await context.params;
+    const parsedId = parseInt(params.id);
 
-        if (isNaN(id)) {
+    try {
+        if (isNaN(parsedId)) {
             return NextResponse.json(
                 {
                     success: false,
@@ -124,13 +127,13 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
             );
         }
 
-        const success = await tipsService.delete(id);
+        const success = await tipsService.delete(parsedId);
 
         if (!success) {
             return NextResponse.json(
                 {
                     success: false,
-                    message: "Tip not found or could not be deleted",
+                    message: `Tip with id ${parsedId} not found.`,
                 },
                 { status: 404 }
             );
@@ -141,7 +144,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
             message: "Tip deleted successfully",
         });
     } catch (error) {
-        console.error(`Error deleting tip with ID ${params.id}:`, error);
+        console.error(`Error deleting tip with ID ${parsedId}:`, error);
         return NextResponse.json(
             {
                 success: false,

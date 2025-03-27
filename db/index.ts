@@ -12,7 +12,7 @@ export async function dbConnection() {
         user: env.database.user,
         password: env.database.password,
         database: env.database.name,
-        multipleStatements: true,
+        multipleStatements: true, // Necessary for the clean script
     });
 
     // Export a connection instance for direct queries

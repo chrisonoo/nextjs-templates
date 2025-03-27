@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { dbPool } from "@/db";
 import { tips } from "@/db/schema/tips";
 import { AbstractRepository } from "./baseRepository";
@@ -42,17 +42,20 @@ export class TipsRepository extends AbstractRepository<
      * Create a new tip
      */
     async create(data: TipCreateInput): Promise<Tip> {
-        // Insert the new tip
-        await dbPool.insert(tips).values(data);
+        // Insert the new tip and get its ID
+        const [insertedId] = await dbPool
+            .insert(tips)
+            .values(data)
+            .$returningId();
 
-        // Get the most recently created tip
-        const results = await dbPool
-            .select()
-            .from(tips)
-            .orderBy(tips.createdAt)
-            .limit(1);
+        // Fetch the created tip using its ID
+        const createdTip = await this.findById(insertedId.id);
 
-        return results[0];
+        if (!createdTip) {
+            throw new Error("Failed to create tip");
+        }
+
+        return createdTip;
     }
 
     /**
@@ -70,9 +73,17 @@ export class TipsRepository extends AbstractRepository<
 
     /**
      * Delete a tip by id
+     * @throws {Error} When tip with given id doesn't exist
      */
     async delete(id: number): Promise<boolean> {
-        const result = await dbPool.delete(tips).where(eq(tips.id, id));
-        return !!result;
+        // First check if the tip exists
+        const existingTip = await this.findById(id);
+        if (!existingTip) {
+            return false;
+        }
+
+        // If tip exists, proceed with deletion
+        await dbPool.delete(tips).where(eq(tips.id, id));
+        return true;
     }
 }

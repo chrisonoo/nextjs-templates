@@ -7,18 +7,13 @@
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
-        "db:test": "tsx db/utils/test-db.ts",
+        "db:test": "tsx db/utils/testDb.ts",
         "db:clean": "tsx db/utils/clean.ts",
-        "db:reset": "tsx db/utils/reset.ts",
         "db:generate": "drizzle-kit generate",
         "db:migrate": "drizzle-kit migrate",
-        "db:push": "drizzle-kit push",
         "db:seed": "tsx db/seeders/seed.ts",
-        "db:seed:drizzle": "tsx db/seeders/seed-drizzle.ts",
         "db:update": "pnpm db:generate && pnpm db:migrate",
-        "db:fresh": "rimraf --glob \"./db/migrations/*\" && pnpm db:clean && pnpm db:generate && pnpm db:migrate && pnpm db:seed",
-        "db:fresh:migrate": "pnpm db:clean && pnpm db:migrate && pnpm db:seed",
-        "db:studio": "drizzle-kit studio"
+        "db:fresh": "rimraf --glob \"./db/migrations/*\" && pnpm db:clean && pnpm db:generate && pnpm db:migrate && pnpm db:seed"
     },
     "dependencies": {
         "@radix-ui/react-dialog": "^1.1.6",
