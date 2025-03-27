@@ -1,7 +1,7 @@
-import { eq, desc } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { dbPool } from "@/db";
 import { tips } from "@/db/schema/tips";
-import { AbstractRepository } from "./baseRepository";
+import type { BaseRepository } from "./baseRepository";
 
 // Define tip entity type
 export type Tip = typeof tips.$inferSelect;
@@ -14,15 +14,9 @@ export type TipUpdateInput = Partial<TipCreateInput>;
  * Repository for tip-related database operations
  * Handles all database access for the tips entity
  */
-export class TipsRepository extends AbstractRepository<
-    Tip,
-    TipCreateInput,
-    TipUpdateInput
-> {
-    constructor() {
-        super(tips);
-    }
-
+export class TipsRepository
+    implements BaseRepository<Tip, TipCreateInput, TipUpdateInput>
+{
     /**
      * Fetch all tips from the database
      */
@@ -79,7 +73,7 @@ export class TipsRepository extends AbstractRepository<
         // First check if the tip exists
         const existingTip = await this.findById(id);
         if (!existingTip) {
-            return false;
+            throw new Error(`Tip with id ${id} not found`);
         }
 
         // If tip exists, proceed with deletion
