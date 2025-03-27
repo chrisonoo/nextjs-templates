@@ -14,8 +14,8 @@ export default async function Home() {
                     height={38}
                     priority
                 />
-                <Link href="/admin" className="flex items-center gap-2">
-                    Admin Panel
+                <Link href="/dashboard" className="flex items-center gap-2">
+                    Dashboard
                     <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
