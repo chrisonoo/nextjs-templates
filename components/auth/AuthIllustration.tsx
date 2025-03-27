@@ -1,15 +1,28 @@
 "use client";
 
+import { GalleryVerticalEnd } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export function AuthIllustration({ className }: { className?: string }) {
     return (
         <div
             className={cn(
-                "relative w-full h-full bg-muted hidden lg:flex items-center justify-center p-6 overflow-hidden",
+                "relative w-full h-full bg-muted hidden lg:flex lg:flex-col items-center justify-center p-6 overflow-hidden",
                 className
             )}
         >
+            <div className="self-start ml-4 mt-3">
+                <Link
+                    href="/"
+                    className="flex items-center gap-2 font-medium relative z-10"
+                >
+                    <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+                        <GalleryVerticalEnd className="size-4" />
+                    </div>
+                    Acme Inc.
+                </Link>
+            </div>
             <svg
                 width="100%"
                 height="100%"

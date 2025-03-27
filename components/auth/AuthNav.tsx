@@ -15,41 +15,41 @@ export function AuthNav({ isMobile = false, onMobileNavClose }: AuthNavProps) {
         }
     };
 
+    // TODO: Uncomment this when the admin panel is ready and session is implemented
     // if (session) {
-    if (false) {
-        // User is logged in
-        if (isMobile) {
-            return (
-                <>
-                    <Link
-                        href="/admin"
-                        className="flex items-center py-2 px-3 rounded-md hover:bg-muted transition-colors"
-                        onClick={onMobileNavClose}
-                    >
-                        Admin Panel
-                    </Link>
-                    <Link
-                        href="/login"
-                        className="flex items-center py-2 px-3 rounded-md hover:bg-muted transition-colors"
-                        onClick={handleSignOut}
-                    >
-                        Log Out
-                    </Link>
-                </>
-            );
-        }
+    //     // User is logged in
+    //     if (isMobile) {
+    //         return (
+    //             <>
+    //                 <Link
+    //                     href="/admin"
+    //                     className="flex items-center py-2 px-3 rounded-md hover:bg-muted transition-colors"
+    //                     onClick={onMobileNavClose}
+    //                 >
+    //                     Admin Panel
+    //                 </Link>
+    //                 <Link
+    //                     href="/login"
+    //                     className="flex items-center py-2 px-3 rounded-md hover:bg-muted transition-colors"
+    //                     onClick={handleSignOut}
+    //                 >
+    //                     Log Out
+    //                 </Link>
+    //             </>
+    //         );
+    //     }
 
-        return (
-            <div className="flex gap-2">
-                <Button asChild variant="outline" size="sm">
-                    <Link href="/admin">Admin Panel</Link>
-                </Button>
-                <Button variant="outline" size="sm" onClick={handleSignOut}>
-                    Log Out
-                </Button>
-            </div>
-        );
-    }
+    //     return (
+    //         <div className="flex gap-2">
+    //             <Button asChild variant="outline" size="sm">
+    //                 <Link href="/admin">Admin Panel</Link>
+    //             </Button>
+    //             <Button variant="outline" size="sm" onClick={handleSignOut}>
+    //                 Log Out
+    //             </Button>
+    //         </div>
+    //     );
+    // }
 
     // User is not logged in
     if (isMobile) {
