@@ -15,14 +15,15 @@ export class TipsService
 {
     /**
      * Get all tips
+     * Could apply business rules like filtering, sorting, etc.
      */
     async getAll(): Promise<Tip[]> {
         return tipsRepository.findAll();
     }
 
     /**
-     * Get a tip by id
-     * Validates the ID format and handles not found errors
+     * Get a tip by id with proper error handling
+     * @throws Error if tip not found or ID invalid
      */
     async getById(id: number | string): Promise<Tip> {
         // Validate and parse ID
@@ -31,7 +32,7 @@ export class TipsService
         // Get the tip
         const tip = await tipsRepository.findById(parsedId);
 
-        // Handle not found
+        // Handle not found with a business-friendly error
         if (!tip) {
             throw new Error(`Tip with ID ${parsedId} not found`);
         }
@@ -40,47 +41,50 @@ export class TipsService
     }
 
     /**
-     * Create a new tip
-     * Validates the input data
+     * Create a new tip with validation
+     * @throws Error if validation fails
      */
     async create(data: TipCreateInput): Promise<Tip> {
-        // Validate input data
+        // Business validation
         this.validateTipContent(data.content);
 
-        // Transform data if needed
+        // Business transformation
         const sanitizedContent = data.content.trim();
 
-        // Delegate to repository for database operation
-        return tipsRepository.create({ content: sanitizedContent });
+        // Delegate to repository for storage
+        return tipsRepository.insert({ content: sanitizedContent });
     }
 
     /**
-     * Update an existing tip
-     * Validates the ID and input data
+     * Update a tip with validation
+     * @throws Error if validation fails or tip not found
      */
     async update(id: number | string, data: TipUpdateInput): Promise<Tip> {
         // Validate and parse ID
         const parsedId = this.validateAndParseId(id);
 
-        // Check if tip exists
+        // Business validation - check if tip exists
         const existingTip = await tipsRepository.findById(parsedId);
         if (!existingTip) {
             throw new Error(`Tip with ID ${parsedId} not found`);
         }
 
-        // Validate input data if content is provided
+        // Business validation of input data
         if (data.content !== undefined) {
             this.validateTipContent(data.content);
         }
 
-        // Transform data if needed
+        // Business transformation
         const updateData: TipUpdateInput = {};
         if (data.content !== undefined) {
             updateData.content = data.content.trim();
         }
 
-        // Delegate to repository for database operation
-        const updatedTip = await tipsRepository.update(parsedId, updateData);
+        // Delegate to repository for storage
+        const updatedTip = await tipsRepository.updateById(
+            parsedId,
+            updateData
+        );
 
         // This should not happen if the tip exists, but just in case
         if (!updatedTip) {
@@ -91,24 +95,27 @@ export class TipsService
     }
 
     /**
-     * Delete a tip
-     * Validates the ID and handles not found errors
+     * Delete a tip with proper error handling
+     * @throws Error if tip not found
      */
     async delete(id: number | string): Promise<boolean> {
         // Validate and parse ID
         const parsedId = this.validateAndParseId(id);
 
         try {
-            // The repository will throw an error if the tip doesn't exist
-            return await tipsRepository.delete(parsedId);
+            // Could add business rules here (e.g., check if deletion is allowed)
+            return await tipsRepository.removeById(parsedId);
         } catch (error) {
-            // Rethrow repository errors
+            // Convert repository errors to business-friendly errors
+            if (error instanceof Error && error.message.includes("not found")) {
+                throw new Error(`Tip with ID ${parsedId} not found`);
+            }
             throw error;
         }
     }
 
     /**
-     * Validates and parses an ID
+     * Business validation: Validates and parses an ID
      * @throws Error if ID is invalid
      */
     private validateAndParseId(id: number | string): number {
@@ -122,7 +129,7 @@ export class TipsService
     }
 
     /**
-     * Validates tip content
+     * Business validation: Validates tip content
      * @throws Error if content is invalid
      */
     private validateTipContent(content: string | undefined): void {

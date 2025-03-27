@@ -33,9 +33,9 @@ export class TipsRepository
     }
 
     /**
-     * Create a new tip
+     * Insert a new tip into the database
      */
-    async create(data: TipCreateInput): Promise<Tip> {
+    async insert(data: TipCreateInput): Promise<Tip> {
         // Insert the new tip and get its ID
         const [insertedId] = await dbPool
             .insert(tips)
@@ -46,16 +46,19 @@ export class TipsRepository
         const createdTip = await this.findById(insertedId.id);
 
         if (!createdTip) {
-            throw new Error("Failed to create tip");
+            throw new Error("Database error: Failed to retrieve created tip");
         }
 
         return createdTip;
     }
 
     /**
-     * Update an existing tip
+     * Update an existing tip in the database
      */
-    async update(id: number, data: TipUpdateInput): Promise<Tip | undefined> {
+    async updateById(
+        id: number,
+        data: TipUpdateInput
+    ): Promise<Tip | undefined> {
         await dbPool
             .update(tips)
             .set({ ...data, updatedAt: new Date() })
@@ -66,14 +69,14 @@ export class TipsRepository
     }
 
     /**
-     * Delete a tip by id
+     * Remove a tip from the database
      * @throws {Error} When tip with given id doesn't exist
      */
-    async delete(id: number): Promise<boolean> {
+    async removeById(id: number): Promise<boolean> {
         // First check if the tip exists
         const existingTip = await this.findById(id);
         if (!existingTip) {
-            throw new Error(`Tip with id ${id} not found`);
+            throw new Error(`Database error: Tip with id ${id} not found`);
         }
 
         // If tip exists, proceed with deletion
