@@ -1,28 +1,25 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { tipsService } from "@/services";
+import { ValidationError } from "@/lib/errors";
+import { successResponse, errorResponse } from "@/lib/api-response";
+import { logger } from "@/lib/logger";
 
 /**
  * GET handler for /api/tips
  * Uses the tips service for business logic
  */
 export async function GET() {
+    logger.info("API request: GET /api/tips");
+
     try {
         const allTips = await tipsService.getAll();
-
-        return NextResponse.json({
-            success: true,
-            data: allTips,
-            timestamp: new Date().toISOString(),
-        });
+        return successResponse(allTips);
     } catch (error) {
-        console.error("Error fetching tips:", error);
-        return NextResponse.json(
-            {
-                success: false,
-                message: "Failed to fetch tips",
-                error: error instanceof Error ? error.message : "Unknown error",
-            },
-            { status: 500 }
+        logger.error("Error fetching tips:", error);
+        return errorResponse(
+            error instanceof Error ? error.message : "Unknown error",
+            "INTERNAL_ERROR",
+            500
         );
     }
 }
@@ -32,31 +29,34 @@ export async function GET() {
  * Creates a new tip
  */
 export async function POST(request: NextRequest) {
+    logger.info("API request: POST /api/tips");
+
     try {
         const body = await request.json();
+        logger.debug("Request body:", body);
 
         // Use the service to create a new tip
         const newTip = await tipsService.create({
             content: body.content,
         });
 
-        return NextResponse.json(
-            {
-                success: true,
-                data: newTip,
-                message: "Tip created successfully",
-            },
-            { status: 201 }
+        return successResponse(
+            newTip,
+            "Tip created successfully",
+            undefined,
+            201
         );
     } catch (error) {
-        console.error("Error creating tip:", error);
-        return NextResponse.json(
-            {
-                success: false,
-                message: "Failed to create tip",
-                error: error instanceof Error ? error.message : "Unknown error",
-            },
-            { status: 500 }
+        logger.error("Error creating tip:", error);
+
+        if (error instanceof ValidationError) {
+            return errorResponse(error.message, "VALIDATION_ERROR", 400);
+        }
+
+        return errorResponse(
+            error instanceof Error ? error.message : "Unknown error",
+            "INTERNAL_ERROR",
+            500
         );
     }
 }

@@ -1,5 +1,8 @@
-import { type NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { tipsService } from "@/services";
+import { NotFoundError, ValidationError } from "@/lib/errors";
+import { successResponse, errorResponse } from "@/lib/api-response";
+import { logger } from "@/lib/logger";
 
 /**
  * GET handler for /api/tips/:id
@@ -10,47 +13,27 @@ export async function GET(
     { params }: { params: Promise<{ id: string }> }
 ) {
     const { id } = await params;
+    logger.info(`API request: GET /api/tips/${id}`);
 
     try {
         // Use the service to get the tip - all validation happens in the service
         const tip = await tipsService.getById(id);
-
-        return NextResponse.json({
-            success: true,
-            data: tip,
-        });
+        return successResponse(tip);
     } catch (error) {
-        console.error(`Error fetching tip with ID ${id}:`, error);
+        logger.error(`Error fetching tip with ID ${id}:`, error);
 
         // Handle specific error types
-        if (error instanceof Error) {
-            if (error.message.includes("Invalid ID format")) {
-                return NextResponse.json(
-                    {
-                        success: false,
-                        message: error.message,
-                    },
-                    { status: 400 }
-                );
-            } else if (error.message.includes("not found")) {
-                return NextResponse.json(
-                    {
-                        success: false,
-                        message: error.message,
-                    },
-                    { status: 404 }
-                );
-            }
+        if (error instanceof NotFoundError) {
+            return errorResponse(error.message, "NOT_FOUND", 404);
+        } else if (error instanceof ValidationError) {
+            return errorResponse(error.message, "VALIDATION_ERROR", 400);
         }
 
         // Generic error handling
-        return NextResponse.json(
-            {
-                success: false,
-                message: "Failed to fetch tip",
-                error: error instanceof Error ? error.message : "Unknown error",
-            },
-            { status: 500 }
+        return errorResponse(
+            error instanceof Error ? error.message : "Unknown error",
+            "INTERNAL_ERROR",
+            500
         );
     }
 }
@@ -64,60 +47,33 @@ export async function PUT(
     { params }: { params: Promise<{ id: string }> }
 ) {
     const { id } = await params;
+    logger.info(`API request: PUT /api/tips/${id}`);
 
     try {
         const body = await request.json();
+        logger.debug("Request body:", body);
 
         // Use the service to update the tip - all validation happens in the service
         const updatedTip = await tipsService.update(id, {
             content: body.content,
         });
 
-        return NextResponse.json({
-            success: true,
-            data: updatedTip,
-            message: "Tip updated successfully",
-        });
+        return successResponse(updatedTip, "Tip updated successfully");
     } catch (error) {
-        console.error(`Error updating tip with ID ${id}:`, error);
+        logger.error(`Error updating tip with ID ${id}:`, error);
 
         // Handle specific error types
-        if (error instanceof Error) {
-            if (error.message.includes("Invalid ID format")) {
-                return NextResponse.json(
-                    {
-                        success: false,
-                        message: error.message,
-                    },
-                    { status: 400 }
-                );
-            } else if (error.message.includes("not found")) {
-                return NextResponse.json(
-                    {
-                        success: false,
-                        message: error.message,
-                    },
-                    { status: 404 }
-                );
-            } else if (error.message.includes("cannot be empty")) {
-                return NextResponse.json(
-                    {
-                        success: false,
-                        message: error.message,
-                    },
-                    { status: 400 }
-                );
-            }
+        if (error instanceof NotFoundError) {
+            return errorResponse(error.message, "NOT_FOUND", 404);
+        } else if (error instanceof ValidationError) {
+            return errorResponse(error.message, "VALIDATION_ERROR", 400);
         }
 
         // Generic error handling
-        return NextResponse.json(
-            {
-                success: false,
-                message: "Failed to update tip",
-                error: error instanceof Error ? error.message : "Unknown error",
-            },
-            { status: 500 }
+        return errorResponse(
+            error instanceof Error ? error.message : "Unknown error",
+            "INTERNAL_ERROR",
+            500
         );
     }
 }
@@ -131,47 +87,28 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     const { id } = await params;
+    logger.info(`API request: DELETE /api/tips/${id}`);
 
     try {
         // Use the service to delete the tip - all validation happens in the service
         await tipsService.delete(id);
 
-        return NextResponse.json({
-            success: true,
-            message: "Tip deleted successfully",
-        });
+        return successResponse(null, "Tip deleted successfully");
     } catch (error) {
-        console.error(`Error deleting tip with ID ${id}:`, error);
+        logger.error(`Error deleting tip with ID ${id}:`, error);
 
         // Handle specific error types
-        if (error instanceof Error) {
-            if (error.message.includes("Invalid ID format")) {
-                return NextResponse.json(
-                    {
-                        success: false,
-                        message: error.message,
-                    },
-                    { status: 400 }
-                );
-            } else if (error.message.includes("not found")) {
-                return NextResponse.json(
-                    {
-                        success: false,
-                        message: error.message,
-                    },
-                    { status: 404 }
-                );
-            }
+        if (error instanceof NotFoundError) {
+            return errorResponse(error.message, "NOT_FOUND", 404);
+        } else if (error instanceof ValidationError) {
+            return errorResponse(error.message, "VALIDATION_ERROR", 400);
         }
 
         // Generic error handling
-        return NextResponse.json(
-            {
-                success: false,
-                message: "Failed to delete tip",
-                error: error instanceof Error ? error.message : "Unknown error",
-            },
-            { status: 500 }
+        return errorResponse(
+            error instanceof Error ? error.message : "Unknown error",
+            "INTERNAL_ERROR",
+            500
         );
     }
 }
