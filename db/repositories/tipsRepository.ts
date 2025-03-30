@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { dbPool } from "@/db";
 import { tips } from "@/db/schema/tips";
-import { AbstractRepository } from "./baseRepository";
+import type { BaseRepository } from "./baseRepository";
 
 // Define tip entity type
 export type Tip = typeof tips.$inferSelect;
@@ -14,15 +14,9 @@ export type TipUpdateInput = Partial<TipCreateInput>;
  * Repository for tip-related database operations
  * Handles all database access for the tips entity
  */
-export class TipsRepository extends AbstractRepository<
-    Tip,
-    TipCreateInput,
-    TipUpdateInput
-> {
-    constructor() {
-        super(tips);
-    }
-
+export class TipsRepository
+    implements BaseRepository<Tip, TipCreateInput, TipUpdateInput>
+{
     /**
      * Fetch all tips from the database
      */
@@ -39,26 +33,32 @@ export class TipsRepository extends AbstractRepository<
     }
 
     /**
-     * Create a new tip
+     * Insert a new tip into the database
      */
-    async create(data: TipCreateInput): Promise<Tip> {
-        // Insert the new tip
-        await dbPool.insert(tips).values(data);
+    async insert(data: TipCreateInput): Promise<Tip> {
+        // Insert the new tip and get its ID
+        const [insertedId] = await dbPool
+            .insert(tips)
+            .values(data)
+            .$returningId();
 
-        // Get the most recently created tip
-        const results = await dbPool
-            .select()
-            .from(tips)
-            .orderBy(tips.createdAt)
-            .limit(1);
+        // Fetch the created tip using its ID
+        const createdTip = await this.findById(insertedId.id);
 
-        return results[0];
+        if (!createdTip) {
+            throw new Error("Database error: Failed to retrieve created tip");
+        }
+
+        return createdTip;
     }
 
     /**
-     * Update an existing tip
+     * Update an existing tip in the database
      */
-    async update(id: number, data: TipUpdateInput): Promise<Tip | undefined> {
+    async updateById(
+        id: number,
+        data: TipUpdateInput
+    ): Promise<Tip | undefined> {
         await dbPool
             .update(tips)
             .set({ ...data, updatedAt: new Date() })
@@ -69,10 +69,18 @@ export class TipsRepository extends AbstractRepository<
     }
 
     /**
-     * Delete a tip by id
+     * Remove a tip from the database
+     * @throws {Error} When tip with given id doesn't exist
      */
-    async delete(id: number): Promise<boolean> {
-        const result = await dbPool.delete(tips).where(eq(tips.id, id));
-        return !!result;
+    async removeById(id: number): Promise<boolean> {
+        // First check if the tip exists
+        const existingTip = await this.findById(id);
+        if (!existingTip) {
+            throw new Error(`Database error: Tip with id ${id} not found`);
+        }
+
+        // If tip exists, proceed with deletion
+        await dbPool.delete(tips).where(eq(tips.id, id));
+        return true;
     }
 }
