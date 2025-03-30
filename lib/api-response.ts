@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 /**
  * Standard API response structure
  */
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
     success: boolean;
     data?: T;
     message?: string;
@@ -11,7 +11,7 @@ export interface ApiResponse<T = any> {
         code: string;
         message: string;
     };
-    meta?: Record<string, any>;
+    meta?: Record<string, unknown>;
 }
 
 /**
@@ -20,7 +20,7 @@ export interface ApiResponse<T = any> {
 export function successResponse<T>(
     data: T,
     message?: string,
-    meta?: Record<string, any>,
+    meta?: Record<string, unknown>,
     status = 200
 ): NextResponse {
     const response: ApiResponse<T> = {
@@ -43,7 +43,7 @@ export function errorResponse(
     message: string,
     code = "INTERNAL_ERROR",
     status = 500,
-    meta?: Record<string, any>
+    meta?: Record<string, unknown>
 ): NextResponse {
     const response: ApiResponse = {
         success: false,

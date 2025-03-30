@@ -43,7 +43,7 @@ export const logger = {
      * Log debug message (only if LOG_LEVEL=debug)
      * For detailed information useful during development
      */
-    debug: (message: string, meta?: Record<string, any>) => {
+    debug: (message: string, meta?: Record<string, unknown>) => {
         if (shouldLog("debug")) {
             console.debug(`[DEBUG] ${message}`, meta ? meta : "");
         }
@@ -53,7 +53,7 @@ export const logger = {
      * Log informational message
      * For general information about normal application operation
      */
-    info: (message: string, meta?: Record<string, any>) => {
+    info: (message: string, meta?: Record<string, unknown>) => {
         if (shouldLog("info")) {
             console.log(`[INFO] ${message}`, meta ? meta : "");
         }
@@ -63,7 +63,7 @@ export const logger = {
      * Log warning message
      * For potential issues that don't cause errors
      */
-    warn: (message: string, meta?: Record<string, any>) => {
+    warn: (message: string, meta?: Record<string, unknown>) => {
         if (shouldLog("warn")) {
             console.warn(`[WARN] ${message}`, meta ? meta : "");
         }
@@ -73,7 +73,11 @@ export const logger = {
      * Log error message
      * For errors that affect application operation
      */
-    error: (message: string, error?: unknown, meta?: Record<string, any>) => {
+    error: (
+        message: string,
+        error?: unknown,
+        meta?: Record<string, unknown>
+    ) => {
         if (shouldLog("error")) {
             console.error(`[ERROR] ${message}`, meta ? meta : "");
 
